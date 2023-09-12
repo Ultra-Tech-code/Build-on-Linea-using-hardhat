@@ -51,6 +51,58 @@ To read more on [zkevm](https://consensys.net/zkevm/)
 
 5. **Developer-friendly design:** Built to minimize onboarding time, the rollup abstracts away ZK complexity, uses ETH for gas and has no reliance on third party transpilers or bespoke middleware
 
+## Tutorial
+
+### Step 1 - Set Up Hardhat Environment
+
+To begin setting up the Hardhat environment for your smart contract implementation, you will first need to create a new folder on your system. You can do this by using the `mkdir` command in your terminal followed by the desired name of your folder. For example:
+
+```bash
+mkdir build-on-linea
+```
+
+Next, navigate to your project folder using the `cd` command, like so:
+
+```bash
+cd build-on-linea
+```
+
+Once you have changed the directory into the folder, you can initialize a new npm project inside it by running the following command:
+
+```bash
+npm init
+```
+
+This will create a `package.json` file in your project folder with default settings.
+Run the following command to initialize the Hardhat environment and create some default configuration files and folders required for building and testing smart contracts.
+
+```bash
+npm install --save-dev hardhat
+npx npx hardhat
+```
+
+We will be using a TypeScript project for this tutorial, so click on “Create a typescript project” and enter this and other prompt options.
+<br/>
+
+Finally, open your project folder in VScode by running this command in your terminal:
+
+```bash
+code .
+```
+
+This will open up your project folder in Visual Studio Code, where you can start setting up your Hardhat environment and writing your smart contract code.
+<br/>
+
+
+### Step 2 - Create Your Smart Contracts
+
+In the root directory of your project, you'll find a folder called "contracts". To create your smart contracts files, simply navigate to this folder and add your new files.
+<br/>
+
+For this tutorial, we'll need to To create these two contracts files:
+
+- Factory contract file
+- TestContract contract file
 
 
 
