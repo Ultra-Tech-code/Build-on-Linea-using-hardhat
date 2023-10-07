@@ -99,60 +99,130 @@ This will open up your project folder in Visual Studio Code, where you can start
 In the root directory of your project, you'll find a folder called "contracts". To create your smart contracts files, simply navigate to this folder and add your new files.
 <br/>
 
-For this tutorial, we'll need to To create these two contracts files:
+For this tutorial, we'll need to To create this contract file:
 
-- Factory contract file
 - TestContract contract file
 
+#### TestContract Contract Explained
 
+```solidity
+//SPDX-License-Identifier:MIT
 
+pragma solidity ^0.8.19;
 
+contract TestContract {
+    string greetings;
 
+    /**
+     * @notice  . A function to set greetings name
+     * @param   _name  . A string
+    */
+    function setGreetings(string memory _name) public {
+        require(bytes(_name).length > 0, "Enter Valid Name");
+        greetings = string(abi.encodePacked("Hello ", _name));
+    }
+    
+    /**
+     * @notice  . A function to return greetings value
+    */
+    function readGreetings() public view returns(string memory){
+        return greetings;
+    }   
+}
 
+```
+The Breakdown of the contract:
 
+- The License was specified
+- The Solidity version was set
+- The `setGreetings(string memory _name)`: sets the state variable greetings to user input `_name`.
+  further breakdown of the function:
+1. **bytes(_name)**: converts the variable `_name` (which is presumably a string) into a byte array. This conversion allows us to measure its length.
 
+2. **bytes(_name).length**: calculates the length (number of bytes) of the converted string.
 
+3. **require(..., "Enter Valid Name")** is a conditional statement. It checks whether the length of the byte array is greater than zero. If this condition is true, the code continues executing normally. If the condition is false (the length is not greater than zero), it will revert with the error message `"Enter Valid Name,"`and the execution of the contract will stop
 
+3. **abi.encodePacked("Hello ", _name)**: Concatenates two strings together. It takes the string `Hello` and concatenates it with the value of the variable `_name`. The `abi.encodePacked` is a function that concatenates the input arguments and returns bytes without unnecessary padding or gas consumption.
 
+4. **string(...)**: Converts the concatenated result into a Solidity string type. The result of `abi.encodePacked("Hello ", _name)` is a byte array, and this part of the code converts it into a string.
 
+5. **greetings = ...**: The resulting string is assigned to the variable `greetings`.
 
+- The `readGreetings()`: returns the value stored in the state variable greetings
 
+### Step 3 - Deploying Your Contracts
+Before deploying your contract to the Linea Goerli, ensure that you have added the Linea Goerli RPC to your wallet.
 
+>**_Note_**: Linea comes with metamask directly so you don't need to import or configure your Metamask
 
-# Usage
+We need Linea Goerli token to pay for gas when we deploy our contract on Linea Goerli.
+
+### Step 4- Metamask Installation & Linea Goerli token minting
+
 1. Install the [MetamaskWallet](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn) from the google chrome store.
 2. Create a wallet.
-3. Go to [https://www.infura.io/faucet/linea](https://www.infura.io/faucet/linea) 
+3. Go to any of these website
+[https://www.infura.io/faucet/linea] (https://www.infura.io/faucet/linea) 
+[https://www.covalenthq.com/platform/faucet/] (https://www.covalenthq.com/platform/faucet/)
+[https://linea.faucetme.pro/] (https://linea.faucetme.pro/)
 and get tokens for the Linea Goerli.
-4. Switch to the Linea Goerli in the MetamaskWallet.
+
+You can also bridge your Goerli eth to Linea Goerli [here](https://bridge.linea.build/)
+1. Connect your wallet in the top-right corner of the page.
+
+2. Verify that the bridge is set to Ethereum → Linea Goerli, and that manual claiming is enabled.
+
+3. Enter the amount of ETH you want to bridge over to Linea Goerli, and select the Start Bridging button.
+>**_Note_**: check that your network is on testnet if you are bridging your testnet token.
+<br/>
+
+Next, add the Linea network configuration to the `hardhat.config.ts` file located in the root directory of your project. To enable the use of your private key for your Metamask account during contract deployment, you will need to install an env file. You can store your private key in the ".env" file and use the dotenv package to load it into your Hardhat configuration. Here is an example of how to configure it:
+
+- Install the dotenv package:
+
+```bash
+npm install dotenv
+```
+
+- Create a `.env` file in the root directory of your project, paste your private key, and `ETHERSCAN_API_KEY` into it:
+
+```
+PRIVATE_KEY = <your-private-key>
+INFURA_API_KEY = <your-INFURA_API_KEY>
+ETHERSCAN_API_KEY = <ETHERSCAN_API_KEY>
+```
+
+Here’s an example of how to add the Linea Goerli network configuration to your `hardhat.config.ts` file:
+
+```typescript
+import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
+require("dotenv").config();
 
 
+type HttpNetworkAccountsUserConfig = any;
+const config: HardhatUserConfig = {
+  solidity: "0.8.19",
+  networks: {
+   inea_testnet: {
+      url: `https://linea-goerli.infura.io/v3/${INFURA_API_KEY}`,
+      accounts: [PRIVATE_KEY],
+    },
+    linea_mainnet: {
+      url: `https://linea-mainnet.infura.io/v3/${INFURA_API_KEY}`,
+      accounts: [PRIVATE_KEY],
+    },
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY
+  }
+};
 
-This section should walk you through everything you need to get started:
+export default config;
 
-Set up your wallet   
-Linea comes with metamask directly so you don;t need to impoort or configure your metamask
-Get funds from a faucet
+```
 
-here: [https://www.infura.io/faucet/linea]
-here: [https://www.covalenthq.com/platform/faucet/]
-here: [https://linea.faucetme.pro/]
-
-you can also bridge your goerli eth to linea 
-here[https://bridge.linea.build/]
-Connect your wallet in the top-right corner of the page.
-
-Verify that the bridge is set to Ethereum → Linea Mainnet, and that manual claiming is enabled.
-
-Enter the amount of ETH you want to bridge over to Linea Mainnet, and select the Start Bridging button.
-nb: check that your network is on tetsnet if you are bridging your testnet token.
-
-Bridge some funds
-Deploy your first contract
-If you run into a problem, step on over to the Linea Support page and let us know.
-
-
- >**_Note_**: check that your network is on tetsnet if you are bridging your testnet token.
 
 setting up hardaht
 open terminal
