@@ -1,14 +1,29 @@
-## how to build on linea with hardhat (draft)
-(testnet and mainnet)
------------------------------
---introduction
----setting up your enviroment
----importing linea to metamask
----setting up ypur hardhat enviroment for linea
---deploying on linea
---verifying your contract
-------------------------------------
-Linea is a zerro knowledge rollup chains
+# how to build on linea with hardhat (testnet and mainnet)
+
+---
+
+## Table of Contents
+- [how to build on linea with hardhat (testnet and mainnet)](#how-to-build-on-linea-with-hardhat-testnet-and-mainnet)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Objective](#objective)
+  - [Prerequisites](#prerequisites)
+  - [Requirements](#requirements)
+  - [A brief intro to Linea](#a-brief-intro-to-linea)
+    - [Benefits of Using Linea](#benefits-of-using-linea)
+  - [Tutorial](#tutorial)
+    - [Step 1 - Set Up Hardhat Environment](#step-1---set-up-hardhat-environment)
+    - [Step 2 - Create Your Smart Contracts](#step-2---create-your-smart-contracts)
+      - [TestContract Contract Explained](#testcontract-contract-explained)
+    - [Step 3 - Deploying Your Contracts](#step-3---deploying-your-contracts)
+      - [Metamask Installation \& Linea Goerli token minting](#metamask-installation--linea-goerli-token-minting)
+    - [Step 4 - Verifying your contract](#step-4---verifying-your-contract)
+    - [Conclusion](#conclusion)
+
+
+## Introduction
+
+Linea is a zero knowledge rollup chains
 
 
 ## Objective
@@ -125,7 +140,7 @@ contract TestContract {
     /**
      * @notice  . A function to return greetings value
     */
-    function readGreetings() public view returns(string memory){
+    function getGreetings() public view returns(string memory){
         return greetings;
     }   
 }
@@ -149,7 +164,7 @@ The Breakdown of the contract:
 
 5. **greetings = ...**: The resulting string is assigned to the variable `greetings`.
 
-- The `readGreetings()`: returns the value stored in the state variable greetings
+- The `getGreetings()`: returns the value stored in the state variable greetings
 
 ### Step 3 - Deploying Your Contracts
 Before deploying your contract to the Linea Goerli, ensure that you have added the Linea Goerli RPC to your wallet.
@@ -158,7 +173,7 @@ Before deploying your contract to the Linea Goerli, ensure that you have added t
 
 We need Linea Goerli token to pay for gas when we deploy our contract on Linea Goerli.
 
-### Step 4- Metamask Installation & Linea Goerli token minting
+#### Metamask Installation & Linea Goerli token minting
 
 1. Install the [MetamaskWallet](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn) from the google chrome store.
 2. Create a wallet.
@@ -185,12 +200,16 @@ Next, add the Linea network configuration to the `hardhat.config.ts` file locate
 npm install dotenv
 ```
 
-- Create a `.env` file in the root directory of your project, paste your private key, and `ETHERSCAN_API_KEY` into it:
+- Create a `.env` file in the root directory of your project, paste your private key, INFURA_API_KEY, and `LINEASCAN_API_KEY` into it:
+
+1. [To get your PRIVATE_KEY](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key)
+2. [To get your INFURA_API_KEY](https://docs.infura.io/getting-started)
+3. [To get your LINEASCAN_API_KEY](#verifying-your-contract)
 
 ```
 PRIVATE_KEY = <your-private-key>
 INFURA_API_KEY = <your-INFURA_API_KEY>
-ETHERSCAN_API_KEY = <ETHERSCAN_API_KEY>
+LINEASCAN_API_KEY = <LINEASCAN_API_KEY>
 ```
 
 Here’s an example of how to add the Linea Goerli network configuration to your `hardhat.config.ts` file:
@@ -200,22 +219,36 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 require("dotenv").config();
 
+let INFURA_API_KEY = process.env.INFURA_API_KEY
+let PRIVATE_KEY = process.env.PRIVATE_KEY
+let LINEASCAN_API_KEY = process.env.LINEASCAN_API_KEY
 
-type HttpNetworkAccountsUserConfig = any;
 const config: HardhatUserConfig = {
   solidity: "0.8.19",
   networks: {
-   inea_testnet: {
+    linea_testnet: {
       url: `https://linea-goerli.infura.io/v3/${INFURA_API_KEY}`,
-      accounts: [PRIVATE_KEY],
+      accounts: [PRIVATE_KEY as string],
     },
     linea_mainnet: {
       url: `https://linea-mainnet.infura.io/v3/${INFURA_API_KEY}`,
-      accounts: [PRIVATE_KEY],
+      accounts: [PRIVATE_KEY as string],
     },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY
+    apiKey: {
+      linea_testnet: LINEASCAN_API_KEY as string
+    },
+    customChains: [
+      {
+        network: "linea_testnet",
+        chainId: 59140,
+        urls: {
+          apiURL: "https://api-testnet.lineascan.build/api",
+          browserURL: "https://goerli.lineascan.build/address"
+        }
+      }
+    ]
   }
 };
 
@@ -223,15 +256,92 @@ export default config;
 
 ```
 
+Next thing is to write our deploy scripts like so;
 
-setting up hardaht
-open terminal
-bash
-```
-mkdir linea-tutorial
-```
-cd linea-tutorial
+```typescript
+import { ethers } from "hardhat";
 
-npm init
-npm install --save-dev hardhat
-npx hardhat
+async function main() {
+
+  const TestContract = await ethers.deployContract("TestContract");
+
+  await TestContract.waitForDeployment();
+
+  console.log(`TestContract deployed to ${TestContract.target}`);
+
+   /**Interact with the simple wallet contract */
+   const TestContractInstance = await ethers.getContractAt("TestContract", TestContract.target);
+   
+   // call the setGreetings function
+   const tx = await TestContractInstance.setGreetings("World");
+
+  // call the getGreetings function
+  const greetings = await TestContractInstance.getGreetings();
+  console.log(`Greetings: ${greetings}`);
+
+}
+
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+
+```
+
+First, let's compile our smart contract using this command line in our VSCode terminal:
+
+```bash
+npx hardhat compile
+```
+
+>**_Note_**: Don't forget to delete the Lock.sol file as it would otherwise lead to an error when running the above command.
+
+Then, let’s deploy our contract using this command line in our VSCode terminal:
+
+```bash
+npx hardhat run scripts/deploy.ts --network linea_testnet
+```
+
+The breakdown of the script:
+- Deployed the TestContract contract and log the factory `contract address`
+- Interacted with the `TestContract` contract passing in the deployed address.
+- Called the `setGreetings` function and passed in a string to it.(i.e "World" in example)
+- Called the `getGreetings` function to get the value.
+
+You will discover that the `getGreetings` function returns `Hello World`
+So, any thing we passed in to the `setGreetings` it's appended with `Hello` and the `getGreetings` function display it to us
+
+![Deployment Output](Images/deployed.png)
+
+Congratulations your contract has been successfullt deployed and you can start interacting with it.
+
+### Step 4 - Verifying your contract
+1. [sign up](https://lineascan.build/register)
+2. confirm your email and sign in
+3. click on your account dropdown and click on `API Keys` or [go to](https://lineascan.build/myapikey)
+4. click on the add button and create an API key
+5. copy the API key generated for you and add it to your env file
+
+```
+  LINEASCAN_API_KEY = <API-key-generated>
+```
+
+Next, let’s verify our contract using this command line in our VSCode terminal:
+
+```bash
+npx hardhat verify --network linea_testnet <DEPLOYED_CONTRACT_ADDRESS> 
+```
+
+![Verification Output](Images/verified.png)
+
+### Conclusion
+
+Therefore, deploying a contract with create2 on Celo allows you to pre-determine the contract's address before deploying it to the network, making it more efficient and cost-effective. This is achieved by calculating the address of the contract using the contract's bytecode, a salt value and the address of the creator account. By using create2, you can ensure that the contract address will be the same across different Ethereum-based networks, reducing the risk of errors or discrepancies. To deploy a contract with create2 on Celo, you can use the Celo SDK or web3.js library to interact with the Celo network and follow the specific steps outlined in the Celo documentation.
+
+Hence, using create2 in Solidity provides several benefits to developers, including cost savings, improved user experience, contract upgradeability, and better security.
+<br/>
+
+The link to my project repository can be found [here](https://github.com/Ultra-Tech-code/Deployment-with-create2).
+
