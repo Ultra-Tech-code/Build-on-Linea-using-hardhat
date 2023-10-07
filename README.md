@@ -276,6 +276,9 @@ async function main() {
    
    // call the setGreetings function
    const tx = await TestContractInstance.setGreetings("World");
+    await tx.wait();
+   console.log(`Transaction hash: ${tx.hash}`);
+  
 
   // call the getGreetings function
   const greetings = await TestContractInstance.getGreetings();
