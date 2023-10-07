@@ -1,9 +1,9 @@
-# how to build on linea with hardhat (testnet and mainnet)
+# how to build on Linea with hardhat (testnet and mainnet)
 
 ---
 
 ## Table of Contents
-- [how to build on linea with hardhat (testnet and mainnet)](#how-to-build-on-linea-with-hardhat-testnet-and-mainnet)
+- [how to build on Linea with hardhat (testnet and mainnet)](#how-to-build-on-linea-with-hardhat-testnet-and-mainnet)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Objective](#objective)
@@ -23,20 +23,21 @@
 
 ## Introduction
 
-Linea is a zero knowledge rollup chains
+In this article, we will embark on using  Linea and Hardhat for a blockchain projects. Whether you are a seasoned developer or just beginer, this guide will walk you through the essential steps for building, deploying, and verifying your DApps and smart contracts on Linea's testnet and mainnet.
 
+Linea presents an enticing environment for decentralized applications (DApps) and smart contract development, thanks to its strong ecosystem and scalability. Meanwhile, Hardhat, a widely-used development toolkit compatible with Ethereum and Ethereum-like blockchains, provides developers with the tools to simplify their development process, covering everything from crafting and testing smart contracts to deploying them effortlessly on both testnet and mainnet networks.
 
 ## Objective
 
-By the end of this tutorial you should be able to write a contract and deploy it with create2 on the CELO blockchain.
+By the end of this tutorial you should be able to write a contract and deploy on Linea blockchain.
 
 ## Prerequisites
 
-- Understanding of [Solidity](https://soliditylang.org/): It is important to have a strong understanding of Solidity as it is the main programming language for creating smart contracts on the Celo blockchain.
+- Understanding of [Solidity](https://soliditylang.org/): It is important to have a strong understanding of Solidity as it is the main programming language for creating smart contracts on the Linea blockchain.
 
 - Command line proficiency: Basic familiarity with using command line tools such as the terminal or Command Prompt is necessary for running commands and scripts.
 
-- Proficiency in [Hardhat](https://hardhat.org/): It is essential to have a good grasp of using Hardhat, a development environment designed for writing, testing, and deploying smart contracts on the Celo blockchain.
+- Proficiency in [Hardhat](https://hardhat.org/): It is essential to have a good grasp of using Hardhat, a development environment designed for writing, testing, and deploying smart contracts on the Linea blockchain.
 
 ## Requirements
 
@@ -93,7 +94,7 @@ Run the following command to initialize the Hardhat environment and create some 
 
 ```bash
 npm install --save-dev hardhat
-npx npx hardhat
+npx hardhat init
 ```
 
 We will be using a TypeScript project for this tutorial, so click on “Create a typescript project” and enter this and other prompt options.
@@ -114,7 +115,7 @@ This will open up your project folder in Visual Studio Code, where you can start
 In the root directory of your project, you'll find a folder called "contracts". To create your smart contracts files, simply navigate to this folder and add your new files.
 <br/>
 
-For this tutorial, we'll need to To create this contract file:
+For this tutorial, we'll need to To create a contract file:
 
 - TestContract contract file
 
@@ -189,6 +190,7 @@ You can also bridge your Goerli eth to Linea Goerli [here](https://bridge.linea.
 2. Verify that the bridge is set to Ethereum → Linea Goerli, and that manual claiming is enabled.
 
 3. Enter the amount of ETH you want to bridge over to Linea Goerli, and select the Start Bridging button.
+   
 >**_Note_**: check that your network is on testnet if you are bridging your testnet token.
 <br/>
 
@@ -338,10 +340,10 @@ npx hardhat verify --network linea_testnet <DEPLOYED_CONTRACT_ADDRESS>
 
 ### Conclusion
 
-Therefore, deploying a contract with create2 on Celo allows you to pre-determine the contract's address before deploying it to the network, making it more efficient and cost-effective. This is achieved by calculating the address of the contract using the contract's bytecode, a salt value and the address of the creator account. By using create2, you can ensure that the contract address will be the same across different Ethereum-based networks, reducing the risk of errors or discrepancies. To deploy a contract with create2 on Celo, you can use the Celo SDK or web3.js library to interact with the Celo network and follow the specific steps outlined in the Celo documentation.
+In conclusion, building on Linea with Hardhat opens up a world of possibilities for blockchain developers. Linea's robust ecosystem and scalability make it an attractive choice for creating decentralized applications (DApps) and smart contracts. With the support of Hardhat, a popular development toolkit compatible with Ethereum and similar blockchains, we were able to streamline our workflow and expedite the development process.
 
-Hence, using create2 in Solidity provides several benefits to developers, including cost savings, improved user experience, contract upgradeability, and better security.
+Throughout this article, we've explored the fundamental steps and best practices for building, testing, and deploying DApps and smart contracts on Linea's testnet and mainnet networks. 
 <br/>
 
-The link to my project repository can be found [here](https://github.com/Ultra-Tech-code/Deployment-with-create2).
+The link to my project repository can be found [here](https://github.com/Ultra-Tech-code/Linea-build).
 
